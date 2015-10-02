@@ -1,4 +1,11 @@
 <?php
+
+/**
+ * Class ObjectData
+ *
+ * a class designed to easily access and manipulate data with on abject with getters and setters
+ *
+ */
 class ObjectData{
 
 	/**
@@ -101,7 +108,10 @@ class ObjectData{
 	}
 
 
-
+	/**
+	 * @return array|bool
+	 * untested
+	 */
 	public function next(){
 		if(empty($this->_result_set)){
 			return false;
@@ -128,6 +138,7 @@ class ObjectData{
 	}
 
 	/**
+	 * untested
 	 * @param $array
 	 * @return array
 	 *
@@ -267,7 +278,7 @@ class ObjectData{
 	 * Quick and dirty to check if a string is json
 	 */
 	public function isJSON($string){
-		if(!$string){return false;}
+		if(empty($string) || is_array($string) || is_object($string)){return false;}
 		$array = json_decode($string, true);
 		return !empty($string) && is_string($string) && is_array($array) && !empty($array) && json_last_error() == 0;
 	}
@@ -313,9 +324,16 @@ class ObjectData{
 	 *
 	 */
 	protected function __clone() {
-		$this->throwError("Cannot clone singleton");
+		if($this->isSingleton()){
+			$this->throwError("Cannot clone singleton");
+		}
+
 	}
 
-	public function __wakeup(){$this->throwError("Cannot unserialize singleton");}
+	public function __wakeup(){
+		if($this->isSingleton()){
+			$this->throwError("Cannot clone singleton");
+		}
+	}
 }
 ?>
